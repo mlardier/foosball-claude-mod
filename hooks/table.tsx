@@ -281,34 +281,34 @@ function footer(g: Game, net: NetProps | null): string {
     const rival = net.role === 'host' ? net.red : net.blue
     switch (g.phase) {
       case 'ready':
-        return `Online vs ${rival} · you are ${mine === 'you' ? 'Blue (left)' : 'Red (right)'} · space to kick off`
+        return `Online vs ${rival} · you are ${mine === 'you' ? 'Blue (left)' : 'Red (right)'} · d to kick off`
       case 'over':
-        return `${g.you > g.cpu ? net.blue : net.red} wins ${Math.max(g.you, g.cpu)}–${Math.min(g.you, g.cpu)} · space for a rematch`
+        return `${g.you > g.cpu ? net.blue : net.red} wins ${Math.max(g.you, g.cpu)}–${Math.min(g.you, g.cpu)} · d for a rematch`
       case 'play':
         return g.hold?.side === mine ? 'Ball is yours: line it up, move + shoot to snake it' : ''
       default:
-        return g.phase === 'paused' ? 'Paused · space to resume' : g.label ?? 'GOAL'
+        return g.phase === 'paused' ? 'Paused · d to resume' : g.label ?? 'GOAL'
     }
   }
   const opponent = g.mode === '2p' ? 'Red' : rankAt(g.rank).name
   switch (g.phase) {
     case 'ready':
       return g.mode === '2p'
-        ? '2 players: Blue w/s + d · Red ↑/↓ + ← · first to 5 · space to start'
-        : `vs ${opponent} · trap, aim, shoot · space to kick off · m for 2 players`
+        ? '2 players: Blue w/s + d · Red ↑/↓ + ← · first to 5 · d to start'
+        : `vs ${opponent} · trap, aim, shoot · d to kick off · m for 2 players`
     case 'paused':
-      return 'Paused · space to resume'
+      return 'Paused · d to resume'
     case 'goal':
       return g.label ?? 'GOAL'
     case 'over': {
       if (g.mode === '2p') {
-        return `${g.you > g.cpu ? 'Blue' : 'Red'} wins ${Math.max(g.you, g.cpu)}–${Math.min(g.you, g.cpu)}! space for a rematch`
+        return `${g.you > g.cpu ? 'Blue' : 'Red'} wins ${Math.max(g.you, g.cpu)}–${Math.min(g.you, g.cpu)}! d for a rematch`
       }
-      if (g.you < g.cpu) return `${opponent} wins ${g.cpu}–${g.you}. Run it back? space`
+      if (g.you < g.cpu) return `${opponent} wins ${g.cpu}–${g.you}. Run it back? d`
       const next = RANKS[g.rank + 1]
       return next
-        ? `You win ${g.you}–${g.cpu}! Promoted: next up ${next.name} · space`
-        : `You beat the Legend ${g.you}–${g.cpu}. Champion. · space`
+        ? `You win ${g.you}–${g.cpu}! Promoted: next up ${next.name} · d`
+        : `You beat the Legend ${g.you}–${g.cpu}. Champion. · d`
     }
     case 'play':
       if (g.hold?.side === 'you') return 'Ball is yours: line it up, move + shoot to snake it'

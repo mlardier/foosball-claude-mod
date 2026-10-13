@@ -49,12 +49,12 @@ const TROPHIES: { id: string; name: string; earned: (r: Result, won: boolean) =>
 ]
 
 const CONTROLS: { hotkey: string; label: string; cmd: FoosballCommand }[] = [
-  { hotkey: '8', label: '↑', cmd: 'up' },
-  { hotkey: '2', label: '↓', cmd: 'down' },
-  { hotkey: '5', label: 'shoot', cmd: 'shoot' },
-  { hotkey: '0', label: 'pause', cmd: 'pause' },
-  { hotkey: '1', label: 'new', cmd: 'restart' },
-  { hotkey: '3', label: '1P/2P', cmd: 'mode' },
+  { hotkey: 'w', label: '↑', cmd: 'up' },
+  { hotkey: 's', label: '↓', cmd: 'down' },
+  { hotkey: 'd', label: 'shoot', cmd: 'shoot' },
+  { hotkey: 'p', label: 'pause', cmd: 'pause' },
+  { hotkey: 'r', label: 'new', cmd: 'restart' },
+  { hotkey: 'm', label: '1P/2P', cmd: 'mode' },
 ]
 
 const HELP = [
@@ -327,7 +327,10 @@ export const register: Register = on => {
   on('command.run', { command: 'foosball' }, async ($, e) => {
     const [sub = '', ...rest] = e.args.trim().split(/\s+/)
     isPaneOpen = true
-    await $.ui.open({ id: PANE, title: 'Foosball', focus: true, rows: 46, columns: 130 })
+    const pane = { id: PANE, title: 'Foosball', focus: true, rows: 46, columns: 130 } as const
+    await $.ui.open(pane)
+    // focus is refused while the composer still holds the submitted /foosball
+    $.clock.after(250, () => void $.ui.open(pane))
 
     switch (sub.toLowerCase()) {
       case '':
@@ -419,6 +422,7 @@ export const register: Register = on => {
     const c = await read($, control)
     const n = await read($, net)
     const press = (cmd: FoosballCommand) => () => update($, control, prev => ({ seq: prev.seq + 1, cmd }))
+    const keysHint = `Esc hands the keys back, /foosball takes them${e.viewport?.isFullscreen === true ? ' · click the table for ↑↓ + space' : ''}`
     const fallback = (
       <Box gap={2}>
         {CONTROLS.filter(ctl => n.role === null || ctl.cmd === 'up' || ctl.cmd === 'down' || ctl.cmd === 'shoot').map(ctl => (
@@ -448,7 +452,7 @@ export const register: Register = on => {
             <Button key="leave" hotkey="x" plain label="leave" onPress={() => exchange($, { op: 'leave' })} />
           </Box>
           {fallback}
-          <Text dimColor>Click table: ↑↓/w s move · space/d shoot · move while shooting = snake</Text>
+          <Text dimColor>move while shooting = snake · {keysHint}</Text>
         </Box>
       )
     }
@@ -544,7 +548,7 @@ export const register: Register = on => {
           {fallback}
           <Button key="office" hotkey="o" plain label="office league" onPress={() => openOffice($)} />
         </Box>
-        <Text dimColor>Click table: ↑↓/w s move · space/d shoot · move while shooting = snake · m: 2 players</Text>
+        <Text dimColor>move while shooting = snake · {keysHint}</Text>
       </Box>
     )
   })
